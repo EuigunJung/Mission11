@@ -1,0 +1,72 @@
+﻿@* This is the path to get to this page, including admin page.
+    Here, you have the ability to CRUD the data.*@
+
+@page "/admin/books"
+@page "/admin"
+@inherits OwningComponentBase<IBookRepository>
+
+<table class="table table-striped table-borderd table-dark table-hover">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Publisher</th>
+            <th>Category</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (BookData?.Count() !=0)
+            {
+              @foreach (Book b in BookData)
+                {
+                    <tr>
+                        <td>@b.BookID</td>
+                        <td>@b.Title</td>
+                        <td>@b.Publisher</td>
+                        <td>@b.Category</td>
+                        <td>
+                            <NavLink class ="btn btn-info btn-sm" href="@GetDetailsUrl(b.BookID)">Details</NavLink>
+                        </td>
+                        <td>
+                            <NavLink class ="btn btn-warning btn-sm" href="@GetEditUrl(b.BookID)">Edit</NavLink>
+                        </td>
+                        <td> 
+                            <button class ="btn btn-danger btn-sm" @onclick="@(x => RemoveBook(b))">Delete</button>
+                        </td>
+                    </tr>
+                }  
+            }
+    </tbody>
+</table>
+
+<NavLink class="btn btn-primary btn-sm text-black" href="/admin/books/detailscreate">Create</NavLink>
+
+
+@* The code below is to connect IBookRepository (Book DB) to the service and CRUD the data *@
+@code {
+    public IBookRepository repo => Service;
+    public IEnumerable<Book> BookData { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        await UpdateData();
+    }
+
+    //Setting async function to update the book data
+    public async Task UpdateData()
+    {
+        BookData = await repo.Books.ToListAsync();
+    }
+
+    //This is the detail and edit pages url path when the admin clicks a button
+    public string GetDetailsUrl(long id) => $"/admin/books/details/{id}";
+    public string GetEditUrl (long id) => $"/admin/books/detailsedit/{id}";
+
+    //Removing the book information function
+    public async Task RemoveBook(Book b)
+    {
+        repo.DeleteBook(b);
+        await UpdateData();
+    }
+}

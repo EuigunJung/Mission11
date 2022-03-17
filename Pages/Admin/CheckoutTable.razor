@@ -1,0 +1,69 @@
+﻿<table class="table table-striped table-dark table-bordered table-hover">
+    <thead>
+        @* Using the razor tag for table title to dynamically display the result *@
+        <tr>
+            <th colspan="5" class="text-center">@TableTitle</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @* Condition for the number of checkouts processed. *@
+        @if (Checkouts?.Count() > 0)
+        {
+            //Displaying the checkout information
+            @foreach (Checkout c in Checkouts)
+            {
+                <tr>
+                    <td>@c.FirstName</td>
+                    <td>@c.LastName</td>
+                    <td>@c.ZIP</td>
+                    <td>Book Title</td>
+                    <td>Quantity</td>
+                    <td>Price</td>
+                    @* This button will allow to move items to the shipping area from the checkout table *@
+                    <td>
+                        <button class="btn btn-sm btn-danger" @onclick="@(x => OrderSelected.InvokeAsync(c.PurchaseId))">
+                            @ButtonLabel
+                        </button>
+                    </td>
+                    @* Displaying the designated LineItems *@
+                </tr>
+                @foreach (Basket.BasketLineItem bli in c.Lines)
+                {
+                    <tr>
+                        <td colspan="3"></td>
+                        <td>@bli.Book.Title</td>
+                        <td>@bli.Quantity</td>
+                        <td>@((bli.Book.Price * bli.Quantity).ToString("c"))</td>
+                    </tr>
+                   
+                }
+            }
+
+        }
+       
+        else
+        {
+            <tr>
+                <td colspan="5" class="text-center">No Orders!</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code
+{
+    //Setting the table name, and "ordered" is the default
+    [Parameter]
+    public string TableTitle { get; set; } = "Ordered";
+    // Getting the checkout records as enumerable
+    [Parameter]
+    public IEnumerable<Checkout> Checkouts { get; set; }
+    // Setting a button for the default label "ship"
+    [Parameter]
+    public string ButtonLabel { get; set; } = "Ship";
+    // Declaring the callback function 
+    [Parameter]
+    public EventCallback<int> OrderSelected { get; set; }
+
+}

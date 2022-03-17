@@ -1,0 +1,13 @@
+﻿<Router AppAssembly="typeof(Startup).Assembly">
+
+    <Found>
+        @* Directing what we are seeing it -- If you type ".../admin" it will show the components from the AdminLayout page. *@
+        <RouteView RouteData="@context" DefaultLayout="typeof(AdminLayout)"></RouteView>
+    </Found>
+
+        @* if the the URL is routed outside settings like '/admin/blaskjsd' display error message. *@
+    <NotFound>
+        <h4 class="bg-danger text-white text-center p-2">There is no matching route found!</h4>
+    </NotFound>
+
+</Router>

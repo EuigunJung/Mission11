@@ -1,0 +1,22 @@
+﻿
+
+
+@model BooksViewModel
+@* Style the code using bootstrap for the div, h1, and h3 tags *@
+
+@* Using razor code (for each), display the following information from the Bookstore DB: *@
+@foreach (Book x in Model.Books)
+{
+    <div class="p-3 mb-2 bg-info text-Black">
+        <div class="p-3 mb-2 bg-dark text-black">
+
+            <partial name="ProjectSummary" model="x" />
+
+            <br />
+        </div>
+    </div>
+}
+
+@* Enabling the boostrap to be applied in the PageLinkTagHelper file. *@
+<div page-blah="@Model.PageInfo" page-action="Index" page-classes-enabled="true"
+     page-class-normal="btn-outline-dark" page-class-selected="btn-primary" page-class="btn" class="btn-group pull-right g-lg-1"></div>

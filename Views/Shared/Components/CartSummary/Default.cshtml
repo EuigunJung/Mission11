@@ -1,0 +1,20 @@
+﻿
+@{
+}
+
+@model Basket
+<div class="">
+    @if (Model.Items.Count() > 0)
+     {
+        <small class="navbar-text">
+            <b>Your Cart:</b>
+            @Model.Items.Sum(x => x.Quantity) itmes(s)
+            @Model.Items.Sum(x => x.Quantity * x.Book.Price).ToString("c")
+        </small>
+     }
+    <a class="btn btn-sm btn-secondary navbar-btn" asp-page="/Shop">
+        <i class="fa fa-shopping-cart"></i>
+    </a>
+
+
+</div>

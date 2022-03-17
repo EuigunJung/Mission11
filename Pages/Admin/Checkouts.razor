@@ -1,0 +1,47 @@
+﻿@page "/admin/checkouts"
+@inherits OwningComponentBase<ICheckoutRepository>
+
+@* Passing in each of the parameters that is looking for, based on the 2 tables below *@
+<CheckoutTable TableTitle="Ordered" Checkouts="OrderedBooks" ButtonLabel="Ship Book(s)" OrderSelected="ShipBook"></CheckoutTable>
+<CheckoutTable TableTitle="Shipped" Checkouts="ShippedBooks" ButtonLabel="Cancel Shipping" OrderSelected="CancelShipping"></CheckoutTable>
+
+@* Updating the data asynchoronically from all the checkouts  *@
+<button class="btn btn-info text-black" @onclick="@(x => UpdateData())">Refresh Data</button>
+
+
+@code {
+    //Calling the ICheckout Repo to the service and then gathering the information by looping through these three IEnumerables 
+    public ICheckoutRepository repo => Service;
+    public IEnumerable<Checkout> AllOrders { get; set; }
+    public IEnumerable<Checkout> OrderedBooks { get; set; }
+    public IEnumerable<Checkout> ShippedBooks { get; set; }
+
+
+    //Async function to update checkout data
+    protected async override Task OnInitializedAsync()
+    {
+        await UpdateData();
+    }
+    public async Task UpdateData()
+    {
+        //This waits until this assignment is completed
+        AllOrders = await repo.Checkouts.ToListAsync();
+        //Next, this sets the ordered books
+        OrderedBooks = AllOrders.Where(x => !x.CheckoutReceived);
+        //Next, this sets the shipped books
+        ShippedBooks = AllOrders.Where(x => x.CheckoutReceived);
+    }
+
+    //Adding the function to move the status of checkedout to shipped 
+    public void ShipBook(int id) => UpdateShipping(id, true);
+    //Cancel changing the status
+    public void CancelShipping(int id) => UpdateShipping(id, false);
+    
+    private void UpdateShipping(int id, bool shipped)
+    {
+        Checkout c = repo.Checkouts.FirstOrDefault(x => x.PurchaseId == id);
+        c.CheckoutReceived = shipped;
+        repo.SaveCheckout(c);
+    }
+
+}
